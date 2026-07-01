@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADUMAS — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="who"><span class="av">@</span> Admin</div>
+      <nav class="admin-nav">
+        <a class="active" href="admin.html">Dashboard</a>
+        <a href="#" id="navAduan">Aduan <span class="count" id="pendingCount">0</span></a>
+      </nav>
+      <a class="logout" href="#" id="logoutBtn">↩ Log out</a>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <div class="brand">📢 ADUMAS</div>
+        <div class="admin-search">
+          🔍 <input id="search" placeholder="Cari nomor aduan..." />
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-list-card">
+          <div id="rows"></div>
+        </div>
+
+        <div>
+          <div class="stat-card dark">
+            <div class="stat-label"><span class="stat-icon">🗂️</span> Total Aduan</div>
+            <div class="stat-value" id="totalCount">0</div>
+            <div class="stat-sub" id="weekCount">+0 minggu ini</div>
+          </div>
+          <div class="stat-card light">
+            <div class="stat-label"><span class="stat-icon">⏳</span> Diproses</div>
+            <div class="stat-value" id="progressCount">0/0</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    const session = Session.requireAdmin();
+    const rowsEl = document.getElementById("rows");
+    const searchEl = document.getElementById("search");
+
+    function weekAgo() { return Date.now() - 7 * 86400000; }
+
+    function render() {
+      const q = searchEl.value.trim().toLowerCase();
+      let items = Store.all().sort((a, b) => b.createdAt - a.createdAt);
+
+      document.getElementById("totalCount").textContent = items.length;
+      document.getElementById("weekCount").textContent =
+        "+" + items.filter(c => c.createdAt >= weekAgo()).length + " minggu ini";
+      const pending = items.filter(c => c.status !== "selesai").length;
+      document.getElementById("progressCount").textContent = pending + "/" + items.length;
+      document.getElementById("pendingCount").textContent = pending;
+
+      if (q) items = items.filter(c => c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q));
+
+      if (!items.length) {
+        rowsEl.innerHTML = `<div class="admin-empty">Tidak ada aduan yang cocok.</div>`;
+        return;
+      }
+
+      rowsEl.innerHTML = items.map(c => `
+        <div class="admin-row ${c.status === 'selesai' ? 'done' : ''}">
+          <div class="rmeta">
+            <div class="rid">${c.code}</div>
+            <div class="rtitle">${escapeHtml(c.title)} — <em>${escapeHtml(c.email)}</em></div>
+          </div>
+          <div class="ractions">
+            <span class="badge ${c.status === 'selesai' ? 'badge-selesai' : 'badge-proses'}"><span class="dot"></span>${c.status === 'selesai' ? 'Selesai' : 'Diproses'}</span>
+            <button class="iconbtn" title="Tandai selesai" data-toggle="${c.id}">✓</button>
+            <button class="iconbtn" title="Hapus" data-delete="${c.id}">🗑</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    rowsEl.addEventListener("click", (e) => {
+      const t = e.target.closest("button");
+      if (!t) return;
+      if (t.dataset.toggle) {
+        const id = Number(t.dataset.toggle);
+        const item = Store.all().find(c => c.id === id);
+        Store.setStatus(id, item.status === "selesai" ? "diproses" : "selesai");
+        render();
+      }
+      if (t.dataset.delete) {
+        if (confirm("Hapus aduan ini?")) {
+          Store.remove(Number(t.dataset.delete));
+          render();
+        }
+      }
+    });
+
+    searchEl.addEventListener("input", render);
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      Session.clear();
+      window.location.href = "index.html";
+    });
+
+    render();
+  </script>
+</body>
+</html>

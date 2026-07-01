@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADUMAS — Tracking Aduan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="screen" style="padding-top:44px;">
+      <h1 class="page-title">Tracking Aduan</h1>
+      <div id="list"></div>
+    </div>
+
+    <div class="tabbar">
+      <a href="home.html"><span class="icon">🏠</span>Home</a>
+      <a class="active" href="tracking.html"><span class="icon">📍</span>Tracking</a>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    const session = Session.requireStudent();
+    const listEl = document.getElementById("list");
+
+    function render() {
+      if (!session) return;
+      const items = Store.byEmail(session.email);
+      if (!items.length) {
+        listEl.innerHTML = `<div class="empty"><div class="glyph">📍</div><strong>Belum ada aduan untuk dilacak</strong><span>Buat aduan baru dari menu Home.</span></div>`;
+        return;
+      }
+      listEl.innerHTML = items.map(c => `
+        <div class="item-card">
+          <div class="meta">
+            <div class="id">${c.code}</div>
+            <div class="title">${timeAgo(c.createdAt)}</div>
+          </div>
+          <span class="badge ${c.status === 'selesai' ? 'badge-selesai' : 'badge-proses'}"><span class="dot"></span>${c.status === 'selesai' ? 'Selesai' : 'Diproses'}</span>
+        </div>
+      `).join("");
+    }
+    render();
+  </script>
+</body>
+</html>

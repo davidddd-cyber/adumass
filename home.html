@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADUMAS — Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="screen" style="padding-top:44px;">
+      <div class="brandmark">
+        <div class="glyph">😤</div>
+        <div class="name">Adumas</div>
+      </div>
+
+      <div class="btn-stack" style="margin-top:8px;">
+        <a class="btn btn-primary" href="create.html">📝 &nbsp;Buat Aduan</a>
+        <a class="btn btn-primary" href="history.html">🕘 &nbsp;Riwayat Aduan</a>
+      </div>
+
+      <div id="welcome" style="text-align:center;color:var(--muted);font-size:13px;margin-top:30px;"></div>
+    </div>
+
+    <div class="tabbar">
+      <a class="active" href="home.html"><span class="icon">🏠</span>Home</a>
+      <a href="tracking.html"><span class="icon">📍</span>Tracking</a>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    const session = Session.requireStudent();
+    if (session) {
+      document.getElementById("welcome").textContent = "Masuk sebagai " + session.email;
+    }
+  </script>
+</body>
+</html>

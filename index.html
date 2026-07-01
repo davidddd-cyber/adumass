@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADUMAS — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="screen">
+      <div class="brandmark">
+        <div class="glyph">📢</div>
+        <div class="name">Adumas</div>
+      </div>
+
+      <h1 class="page-title">Sign In</h1>
+      <p class="lede">Masuk untuk membuat dan memantau aduan kamu</p>
+
+      <form id="loginForm">
+        <div class="field field-boxed">
+          <label for="email">Email Mahasiswa</label>
+          <input id="email" type="email" placeholder="nama@mhs.id" value="yesking0000@mhs.id" required />
+        </div>
+        <div class="field field-boxed pw-wrap">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="••••••••••" value="password123" required />
+          <button type="button" id="togglePw">Lihat</button>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:10px;">Sign In</button>
+      </form>
+
+      <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:22px;">
+        Login sebagai admin? gunakan <strong>admin@mhs.id</strong> / password apa saja
+      </p>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    document.getElementById("togglePw").addEventListener("click", () => {
+      const pw = document.getElementById("password");
+      const btn = document.getElementById("togglePw");
+      const isPw = pw.type === "password";
+      pw.type = isPw ? "text" : "password";
+      btn.textContent = isPw ? "Sembunyi" : "Lihat";
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      if (!email || !password) return;
+      Session.set(email);
+      window.location.href = (email === "admin@mhs.id") ? "admin.html" : "home.html";
+    });
+
+    // if already logged in, skip straight through
+    const s = Session.get();
+    if (s) window.location.href = s.isAdmin ? "admin.html" : "home.html";
+  </script>
+</body>
+</html>

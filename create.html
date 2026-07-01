@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADUMAS — Buat Aduan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="screen">
+      <div class="topbar">
+        <a class="back" href="home.html">←</a>
+        <h1>Buat Aduan</h1>
+      </div>
+
+      <form id="createForm">
+        <div class="field field-boxed">
+          <label for="title">Judul Aduan</label>
+          <input id="title" type="text" placeholder="Contoh: AC ruang kelas rusak" required maxlength="80" />
+        </div>
+        <div class="field field-boxed">
+          <label for="body">Isi Aduan</label>
+          <textarea id="body" rows="6" placeholder="Ceritakan detail aduan kamu di sini..." required maxlength="600"></textarea>
+        </div>
+        <button type="submit" id="submitBtn" class="btn btn-primary" disabled style="margin-top:6px;">Kirim Aduan</button>
+      </form>
+    </div>
+
+    <div class="tabbar">
+      <a href="home.html"><span class="icon">🏠</span>Home</a>
+      <a href="tracking.html"><span class="icon">📍</span>Tracking</a>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    const session = Session.requireStudent();
+    const titleEl = document.getElementById("title");
+    const bodyEl = document.getElementById("body");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function refreshBtn() {
+      submitBtn.disabled = !(titleEl.value.trim() && bodyEl.value.trim());
+    }
+    titleEl.addEventListener("input", refreshBtn);
+    bodyEl.addEventListener("input", refreshBtn);
+
+    document.getElementById("createForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!session) return;
+      Store.add({ title: titleEl.value.trim(), body: bodyEl.value.trim(), email: session.email });
+      window.location.href = "success.html";
+    });
+  </script>
+</body>
+</html>
